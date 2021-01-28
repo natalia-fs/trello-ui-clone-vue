@@ -2,58 +2,17 @@
   <div id="app">
     <Header />
     <div class="board">
-      <div class="lane">
-        <h2 class="lane-title">Backlog</h2>
+      <div class="lane" v-for="(list, index) in cards" :key="index">
+        <h2 class="lane-title">{{list.title}}</h2>
         <Container
           group-name="list"
-          @drag-start="handleDragStart('backlog', $event)"
-          @drop="handleDrop('backlog', $event)"
+          
+          @drag-start="handleDragStart(list.title, $event)"
+          @drop="handleDrop(list.title, $event)"
           :get-child-payload="getChildPayload"
           :drop-placeholder="{className: 'placeholder'}"
         >
-          <Draggable v-for="card in cards.backlog" :key="card.id">
-            <Card>{{card.text}}</Card>
-          </Draggable>
-        </Container>
-      </div>
-      <div class="lane">
-        <h2 class="lane-title">Desenvolvimento</h2>
-        <Container
-          group-name="list"
-          @drag-start="handleDragStart('dev', $event)"
-          @drop="handleDrop('dev', $event)"
-          :get-child-payload="getChildPayload"
-          :drop-placeholder="{className: 'placeholder'}"
-        >
-          <Draggable v-for="card in cards.dev" :key="card.id">
-            <Card>{{card.text}}</Card>
-          </Draggable>
-        </Container>
-      </div>
-      <div class="lane">
-        <h2 class="lane-title">Testes</h2>
-        <Container
-          group-name="list"
-          @drag-start="handleDragStart('tests', $event)"
-          @drop="handleDrop('tests', $event)"
-          :get-child-payload="getChildPayload"
-          :drop-placeholder="{className: 'placeholder'}"
-        >
-          <Draggable v-for="card in cards.tests" :key="card.id">
-            <Card>{{card.text}}</Card>
-          </Draggable>
-        </Container>
-      </div>
-      <div class="lane">
-        <h2 class="lane-title">Concluído</h2>
-        <Container
-          group-name="list"
-          @drag-start="handleDragStart('done', $event)"
-          @drop="handleDrop('done', $event)"
-          :get-child-payload="getChildPayload"
-          :drop-placeholder="{className: 'placeholder'}"
-        >
-          <Draggable v-for="card in cards.done" :key="card.id">
+          <Draggable v-for="card in list.cards" :key="card.id">
             <Card>{{card.text}}</Card>
           </Draggable>
         </Container>
@@ -68,6 +27,7 @@ import Header from './components/Header';
 import Card from './components/Card';
 import initalCards from "./initalCards";
 import {Container, Draggable} from "vue-smooth-dnd";
+import collect from 'collect.js';
 
 export default {
   name: 'App',
@@ -78,12 +38,12 @@ export default {
     Draggable
   },
   data: () => ({
-    cards: {
-      backlog: initalCards.backlog,
-      dev: initalCards.dev,
-      tests: initalCards.test,
-      done: [],
-    },
+    cards: collect([
+      {title: 'Backlog', cards: initalCards.backlog},
+      {title: 'Desenvolvimento', cards: initalCards.dev},
+      {title: 'Testes', cards: initalCards.test},
+      {title: 'Concluído', cards: []},
+    ]),
     draggingCard: {
       lane: '',
       index: -1,
@@ -95,28 +55,29 @@ export default {
       const { payload, isSource } = dragResult;
       if(isSource){
         this.draggingCard = {
-          lane,
           index: payload,
           cardData: {
-            ...this.cards[lane][payload]
+            ...this.cards.where('title', lane).first().cards[payload]
           }
         }
       }
-      console.log(this.draggingCard)
     },
     handleDrop(lane, dropResult){
-      console.log(dropResult, lane)
       const {removedIndex, addedIndex } = dropResult;
+      let list = this.cards.where('title', lane).first().cards;
       if(lane === this.draggingCard.lane && removedIndex === addedIndex){
         return;
       }
-      if(removedIndex !== null){
-        this.cards[lane].splice(removedIndex, 1);
+      if(list){
+        if(removedIndex !== null){
+          // this.cards[lane].splice(removedIndex, 1);
+          list.splice(removedIndex, 1);
+        }
+        if(addedIndex !== null){
+          // this.cards[lane].splice(addedIndex, 0, this.draggingCard.cardData)
+          list.splice(addedIndex, 0, this.draggingCard.cardData)
+        }
       }
-      if(addedIndex !== null){
-        this.cards[lane].splice(addedIndex, 0, this.draggingCard.cardData)
-      }
-      console.log(lane, dropResult, removedIndex, addedIndex)
     },
     getChildPayload(index){
       return index;

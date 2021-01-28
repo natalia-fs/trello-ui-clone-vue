@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "collect.js": "^4.28.6",
     "core-js": "^3.6.5",
     "vue": "^2.6.11",
     "vue-smooth-dnd": "^0.8.1"
