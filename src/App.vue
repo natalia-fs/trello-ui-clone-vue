@@ -6,7 +6,6 @@
         <h2 class="lane-title">{{list.title}}</h2>
         <Container
           group-name="list"
-          
           @drag-start="handleDragStart(list.title, $event)"
           @drop="handleDrop(list.title, $event)"
           :get-child-payload="getChildPayload"
@@ -70,11 +69,9 @@ export default {
       }
       if(list){
         if(removedIndex !== null){
-          // this.cards[lane].splice(removedIndex, 1);
           list.splice(removedIndex, 1);
         }
         if(addedIndex !== null){
-          // this.cards[lane].splice(addedIndex, 0, this.draggingCard.cardData)
           list.splice(addedIndex, 0, this.draggingCard.cardData)
         }
       }
