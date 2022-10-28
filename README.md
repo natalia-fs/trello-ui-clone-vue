@@ -13,7 +13,7 @@ Scrollando pelo YouTube acabei encontrando esse tutorial incrível do canal do [
 ## Preview
 
 <!-- Inserir imagem com a #vitrinedev ao final do link -->
-![](https://github.com/natalia-fs/trello-ui-clone-vue/blob/master/src/assets/preview.gif#vitrinedev)
+![](https://github.com/natalia-fs/trello-ui-clone-vue/blob/master/src/assets/preview.gif?raw=true#vitrinedev)
 
 
 
